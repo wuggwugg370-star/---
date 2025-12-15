@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>点餐系统 · Neo Dining</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --shadow-strong: 0 25px 45px rgba(15,15,38,0.25);
+      --accent: #0071e3;
+      --accent-2: #34d1bf;
+      --text-primary: #0b1524;
+      --text-secondary: #5b6876;
+      --bg-gradient: radial-gradient(circle at 10% 20%, #e3eeff 0%, #f8f9ff 30%, #fefefe 60%);
+      --card-bg: rgba(255,255,255,0.9);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --glass-bg: rgba(15, 17, 26, 0.8);
+        --glass-border: rgba(255, 255, 255, 0.05);
+        --shadow-strong: 0 30px 60px rgba(2, 6, 23, 0.7);
+        --accent: #0aa2ff;
+        --accent-2: #5af3d1;
+        --text-primary: #f5f7ff;
+        --text-secondary: #c0cad8;
+        --bg-gradient: radial-gradient(circle at 10% 20%, #0a1121 0%, #0f1627 35%, #05070d 70%);
+        --card-bg: rgba(13, 17, 25, 0.85);
+      }
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background-image: var(--bg-gradient);
+      color: var(--text-primary);
+      padding: 32px 16px 64px;
+    }
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 32px;
+      padding: 32px;
+      border-radius: 26px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-strong);
+      backdrop-filter: blur(32px);
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 56px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin: 0;
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      line-height: 1.5;
+    }
+    header .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(0, 113, 227, 0.1);
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 13px;
+      width: fit-content;
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+      gap: 24px;
+    }
+    .panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow-strong);
+      backdrop-filter: blur(16px);
+    }
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .menu-card {
+      border-radius: 20px;
+      padding: 18px;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.4);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    .menu-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,113,227,0.2);
+      box-shadow: 0 20px 40px rgba(15,30,60,0.18);
+    }
+    .menu-card:hover::after {
+      opacity: 1;
+    }
+    .thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: radial-gradient(circle at 30% 20%, #fff 0, #ffd1a8 40%, #ff8a5c 70%, #ff4b78 100%);
+      flex-shrink: 0;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+      background-size: cover;
+      background-position: center;
+    }
+    .menu-main {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .menu-text {
+      flex: 1;
+    }
+    .menu-name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .menu-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .menu-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .price {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .quantity {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.7);
+      padding: 0 6px;
+    }
+    button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      color: var(--accent);
+    }
+    .qty-value {
+      min-width: 36px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .status {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+    }
+    .summary {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .summary-list {
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+    .total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .primary-btn {
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 15px 30px rgba(0, 113, 227, 0.35);
+      transition: transform .2s ease, box-shadow .2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .primary-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .primary-btn:not(:disabled):hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0, 113, 227, 0.45);
+    }
+    .toast {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      padding: 18px 24px;
+      border-radius: 16px;
+      background: rgba(20,25,38,0.9);
+      color: #fff;
+      font-weight: 500;
+      box-shadow: var(--shadow-strong);
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+      transition: opacity .3s ease, transform .3s ease;
+      z-index: 10;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <span class="badge">Neo Dining · Delightfully Simple</span>
+      <h1>点餐系统客户端</h1>
+      <p>在「Neo Dining」中，点餐是一件优雅顺滑的事情。挑选菜品、调整份数、立即下单——每一个动作都有 Apple 级的细腻反馈，让体验像浏览官网一样顺滑。</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="status" id="status">正在连接厨房...</div>
+        <h2>菜品精选</h2>
+        <div class="menu-grid" id="menuGrid"></div>
+      </section>
+
+      <aside class="panel summary">
+        <h2>订单摘要</h2>
+        <div class="summary-list" id="summaryList">
+          <p style="color:var(--text-secondary); margin:0;">请选择菜品后，这里会实时显示订单。</p>
+        </div>
+        <div class="total">
+          <span>应付金额</span>
+          <span id="totalAmount">￥0.00</span>
+        </div>
+        <button class="primary-btn" id="orderBtn" disabled>立即下单</button>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // 为兼容性考虑，前端全部使用 ES5 语法，避免旧浏览器解析错误导致“完全无交互”
+    (function () {
+      var API_BASE = window.API_BASE || '';
+
+      var els = {
+        status: document.getElementById('status'),
+        menuGrid: document.getElementById('menuGrid'),
+        summary: document.getElementById('summaryList'),
+        total: document.getElementById('totalAmount'),
+        orderBtn: document.getElementById('orderBtn'),
+        toast: document.getElementById('toast')
+      };
+
+      var menuState = {};   // name -> {price, image}
+      var selection = {};   // name -> {price, count}
+
+      function showToast(message, variant) {
+        if (!variant) variant = 'info';
+        els.toast.textContent = message;
+        els.toast.style.background = variant === 'error'
+          ? 'rgba(217, 45, 32, 0.95)'
+          : 'rgba(20,25,38,0.9)';
+        els.toast.className = 'toast show';
+        setTimeout(function () {
+          els.toast.className = 'toast';
+        }, 3200);
+      }
+
+      var FALLBACK_MENU = {
+        "演示 · 宫保鸡丁": { price: 28.0 },
+        "演示 · 鱼香肉丝": { price: 24.0 },
+        "演示 · 麻婆豆腐": { price: 22.0 },
+        "演示 · 黑椒牛柳": { price: 36.0 },
+        "演示 · 香煎三文鱼": { price: 58.0 },
+        "演示 · 松露蘑菇浓汤": { price: 38.0 },
+        "演示 · 鲜虾云吞": { price: 26.0 },
+        "演示 · 牛油果沙拉": { price: 32.0 },
+        "演示 · 椰汁西米露": { price: 16.0 },
+        "演示 · 柚子气泡水": { price: 12.0 }
+      };
+
+      function normalizeMenuEntry(value) {
+        if (typeof value === 'number') {
+          return { price: value, image: null };
+        }
+        return {
+          price: Number(value.price || 0),
+          image: value.image || null
+        };
+      }
+
+      function supportsFetch() {
+        return typeof window.fetch === 'function';
+      }
+
+      function fetchMenu() {
+        els.status.textContent = '正在加载菜单，请稍候…';
+
+        if (!supportsFetch()) {
+          // 老浏览器没有 fetch，直接使用演示菜单
+          renderMenu(FALLBACK_MENU);
+          els.status.textContent = '浏览器不支持 fetch，已载入本地演示菜单';
+          return;
+        }
+
+        window.fetch(API_BASE + '/menu')
+          .then(function (resp) { return resp.json(); })
+          .then(function (data) {
+            if (!data || data.status !== 'ok') {
+              throw new Error(data && data.message || '获取菜单失败');
+            }
+            renderMenu(data.menu || {});
+            els.status.textContent = '菜单已更新 ✓';
+          })
+          .catch(function (error) {
+            if (window.console) console.error(error);
+            els.status.textContent = '获取菜单失败：' + error.message;
+            showToast('后端未启动，已载入本地演示菜单', 'error');
+            renderMenu(FALLBACK_MENU);
+          });
+      }
+
+      function clearObject(obj) {
+        for (var k in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, k)) {
+            delete obj[k];
+          }
+        }
+      }
+
+      function renderMenu(menu) {
+        clearObject(menuState);
+        clearObject(selection);
+        els.menuGrid.innerHTML = '';
+
+        var hasItem = false;
+        for (var name in menu) {
+          if (!Object.prototype.hasOwnProperty.call(menu, name)) continue;
+          hasItem = true;
+          var entry = normalizeMenuEntry(menu[name]);
+          menuState[name] = entry;
+
+          var price = entry.price;
+          var image = entry.image;
+          var card = document.createElement('article');
+          card.className = 'menu-card';
+
+          var html = ''
+            + '<div class="menu-main">'
+            + '  <div class="thumb"'
+            + (image ? ' style="background-image:url(' + image + ')"' : '')
+            + '  ></div>'
+            + '  <div class="menu-text">'
+            + '    <div class="menu-name">' + name + '</div>'
+            + '    <div class="menu-desc">直达味蕾的灵感料理 · Daily crafted</div>'
+            + '    <div class="menu-bottom">'
+            + '      <span class="price">￥' + price.toFixed(2) + '</span>'
+            + '      <div class="quantity" data-name="' + name + '">'
+            + '        <button class="qty-btn" data-delta="-1">−</button>'
+            + '        <span class="qty-value">0</span>'
+            + '        <button class="qty-btn" data-delta="1">＋</button>'
+            + '      </div>'
+            + '    </div>'
+            + '  </div>'
+            + '</div>';
+
+          card.innerHTML = html;
+          els.menuGrid.appendChild(card);
+        }
+
+        if (!hasItem) {
+          els.menuGrid.innerHTML = '<p style="color:var(--text-secondary)">暂无菜品。</p>';
+        }
+
+        var qtyNodes = els.menuGrid.querySelectorAll('.quantity');
+        for (var i = 0; i < qtyNodes.length; i++) {
+          (function (qty) {
+            qty.addEventListener('click', function (event) {
+              var target = event.target || event.srcElement;
+              var btn = target && target.getAttribute('data-delta') ? target : target.closest && target.closest('[data-delta]');
+              if (!btn) return;
+              var delta = Number(btn.getAttribute('data-delta') || '0');
+              var name = qty.getAttribute('data-name');
+              updateSelection(name, delta);
+              var rec = selection[name];
+              var span = qty.querySelector('.qty-value');
+              if (span) span.textContent = rec ? rec.count : 0;
+            });
+          })(qtyNodes[i]);
+        }
+
+        updateSummary();
+      }
+
+      function updateSelection(name, delta) {
+        var info = menuState[name];
+        if (!info) return;
+        var price = info.price;
+        var current = selection[name] || { price: price, count: 0 };
+        current.price = price;
+        current.count = Math.max(0, current.count + delta);
+        if (current.count === 0) {
+          delete selection[name];
+        } else {
+          selection[name] = current;
+        }
+        updateSummary();
+      }
+
+      function updateSummary() {
+        els.summary.innerHTML = '';
+        var hasAny = false;
+        var total = 0;
+
+        for (var name in selection) {
+          if (!Object.prototype.hasOwnProperty.call(selection, name)) continue;
+          hasAny = true;
+          var rec = selection[name];
+          total += rec.price * rec.count;
+
+          var row = document.createElement('div');
+          row.className = 'summary-item';
+          row.innerHTML =
+            '<span>' + name + ' × ' + rec.count + '</span>' +
+            '<strong>￥' + (rec.price * rec.count).toFixed(2) + '</strong>';
+          els.summary.appendChild(row);
+        }
+
+        if (!hasAny) {
+          els.summary.innerHTML = '<p style="color:var(--text-secondary); margin:0;">请选择菜品后，这里会实时显示订单。</p>';
+          els.total.textContent = '￥0.00';
+          els.orderBtn.disabled = true;
+          return;
+        }
+
+        els.total.textContent = '￥' + total.toFixed(2);
+        els.orderBtn.disabled = false;
+      }
+
+      function submitOrder() {
+        if (!supportsFetch()) {
+          showToast('当前浏览器不支持在线下单，只能体验前端交互', 'error');
+          return;
+        }
+        var items = [];
+        for (var name in selection) {
+          if (!Object.prototype.hasOwnProperty.call(selection, name)) continue;
+          var rec = selection[name];
+          for (var i = 0; i < rec.count; i++) items.push(name);
+        }
+        if (!items.length) return;
+
+        els.orderBtn.disabled = true;
+        els.orderBtn.textContent = '正在下单…';
+
+        window.fetch(API_BASE + '/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: items })
+        })
+          .then(function (resp) { return resp.json(); })
+          .then(function (data) {
+            if (!data || data.status !== 'ok') {
+              throw new Error(data && data.message || '下单失败');
+            }
+            showToast('下单成功，合计 ￥' + data.total.toFixed(2));
+            fetchMenu();
+          })
+          .catch(function (error) {
+            if (window.console) console.error(error);
+            showToast(error.message || '下单失败', 'error');
+          })
+          .finally
+          ? null
+          : (function () {
+              els.orderBtn.disabled = false;
+              els.orderBtn.textContent = '立即下单';
+            })();
+      }
+
+      els.orderBtn.addEventListener('click', submitOrder);
+      fetchMenu();
+    })();
+  </script>
+</body>
+</html>
+
+
