@@ -85,7 +85,7 @@ def show_menu():
 
 
 def generate_ai_image():
-    name = input("请输入需要设置图片的菜名：").strip()
+    name = input("请输入需要生成图片的菜名：").strip()
     if not name:
         print("菜名不能为空")
         return
@@ -95,16 +95,27 @@ def generate_ai_image():
     if menu_data.get("status") != "ok" or name not in menu_data.get("menu", {}):
         print(f"菜品 '{name}' 不存在，请先添加该菜品")
         return
-        
-    image_path = input("请输入本地图片路径（绝对路径或相对路径）：").strip()
-    if not image_path:
-        print("图片路径不能为空")
+
+    print(f"正在为 {name} 生成图片，请稍候...")
+    
+    try:
+        # 修正1：接口地址改为 gen-image
+        # 修正2：不需要传 image_path，服务端会自动生成
+        resp = requests.post(
+            f"{BASE_URL}/admin/menu/{name}/gen-image",
+            json={}, 
+            timeout=60,
+        )
+        data = resp.json()
+    except Exception as e:
+        print(f"请求失败: {e}")
         return
-        
-    # 检查文件是否存在
-    if not os.path.exists(image_path):
-        print(f"错误：图片文件不存在 - {image_path}")
-        return
+
+    if data.get("status") == "ok":
+        print("图片已生成并设置成功！")
+        print("图片路径：", data.get("image"))
+    else:
+        print("设置失败：", data.get("message"))
         
     # 检查文件类型
     valid_extensions = ('.jpg', '.jpeg', '.png', '.gif')
