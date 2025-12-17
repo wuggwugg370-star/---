@@ -99,8 +99,7 @@ def generate_ai_image():
     print(f"正在为 {name} 生成图片，请稍候...")
     
     try:
-        # 修正1：接口地址改为 gen-image
-        # 修正2：不需要传 image_path，服务端会自动生成
+        # 调用服务端生成图片的接口
         resp = requests.post(
             f"{BASE_URL}/admin/menu/{name}/gen-image",
             json={}, 
@@ -116,59 +115,6 @@ def generate_ai_image():
         print("图片路径：", data.get("image"))
     else:
         print("设置失败：", data.get("message"))
-        
-    # 检查文件类型
-    valid_extensions = ('.jpg', '.jpeg', '.png', '.gif')
-    if not image_path.lower().endswith(valid_extensions):
-        print(f"错误：仅支持 {valid_extensions} 类型的图片")
-        return
 
-    try:
-        # 读取图片文件内容
-        with open(image_path, 'rb') as f:
-            image_data = f.read()
-            
-        resp = requests.post(
-            f"{BASE_URL}/admin/menu/{name}/ai-image",
-            json={"image_path": image_path},  # 发送本地路径供后端处理
-            timeout=60,
-        )
-        data = resp.json()
-    except Exception as e:
-        print(f"请求失败: {e}")
-        return
-
-    if data.get("status") == "ok":
-        print("图片已设置：", data.get("image"))
-    else:
-        print("设置失败：", data.get("message"))
-
-def main():
-    print("=== 后台管理客户端 ===")
-    print(f"服务地址：{BASE_URL}")
-    while True:
-        print("\n1. 查看菜单")
-        print("2. 新增/修改菜品")
-        print("3. 删除菜品")
-        print("4. 使用 AI 生成菜品图片")
-        print("q. 退出")
-        choice = input("请选择操作：").strip().lower()
-        if choice == "1":
-            show_menu()
-        elif choice == "2":
-            set_item()
-        elif choice == "3":
-            delete_item()
-        elif choice == "4":
-            generate_ai_image()
-        elif choice == "q":
-            print("已退出后台管理客户端。")
-            break
-        else:
-            print("无效选择，请重新输入。")
-
-
-if __name__ == "__main__":
-    main()
-
-
+    # === 注意：后面原有的关于 image_path 的旧代码必须全部删除 ===
+  
