@@ -9,307 +9,281 @@
     :root {
       --bg-body: #f5f5f7;
       --bg-card: #ffffff;
-      --text-primary: #1d1d1f;
-      --text-secondary: #86868b;
+      --text-main: #1d1d1f;
+      --text-sub: #86868b;
       --accent: #0071e3;
-      --accent-hover: #0077ed;
-      --success: #34c759;
-      --radius-lg: 20px;
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    body {
-      margin: 0;
-      font-family: "Inter", -apple-system, sans-serif;
-      background-color: var(--bg-body);
-      color: var(--text-primary);
-      padding-bottom: 120px;
-    }
-
-    .shell { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
-
-    header { text-align: center; margin-bottom: 50px; }
-    h1 { font-size: 42px; font-weight: 700; margin: 0 0 10px; letter-spacing: -1px; }
-    .subtitle { color: var(--text-secondary); font-size: 18px; }
-
-    /* Grid Layout */
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 30px;
-    }
-
-    /* Card */
-    .card {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-
-    .card-img {
-      height: 180px;
-      background-color: #eee;
-      background-size: cover;
-      background-position: center;
-      position: relative;
+      --danger: #ff3b30;
+      --radius: 16px;
     }
     
-    /* Edit Button (Visible on hover) */
-    .edit-btn {
-      position: absolute;
-      top: 10px; right: 10px;
-      background: rgba(0,0,0,0.6);
-      color: white;
+    body { margin: 0; font-family: "Inter", sans-serif; background: var(--bg-body); color: var(--text-main); padding-bottom: 140px; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+    /* Header & Search */
+    header { margin-bottom: 20px; position: sticky; top: 0; background: var(--bg-body); z-index: 10; padding-top: 20px; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    h1 { margin: 0; font-size: 28px; font-weight: 700; }
+    
+    .search-box {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
       border: none;
-      padding: 4px 10px;
       border-radius: 12px;
-      font-size: 12px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s;
+      background: #e5e5ea;
+      margin-bottom: 15px;
+      outline: none;
     }
-    .card:hover .edit-btn { opacity: 1; }
+    .search-box:focus { background: #d1d1d6; }
 
-    .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-    .card-price { color: var(--text-secondary); font-size: 15px; margin-bottom: 16px; }
+    /* Categories */
+    .nav-scroller { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; margin: 0 -20px 20px; padding: 0 20px 10px; -webkit-overflow-scrolling: touch; }
+    .nav-pill {
+      display: inline-block;
+      padding: 8px 20px;
+      margin-right: 10px;
+      background: #e5e5ea;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-pill.active { background: var(--text-main); color: white; }
+
+    /* Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
     
+    /* Card */
+    .card { background: var(--bg-card); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s; display: flex; flex-direction: column; }
+    .card:hover { transform: translateY(-4px); }
+    
+    .card-img {
+      height: 160px; background: #eee; background-size: cover; background-position: center; position: relative; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-placeholder { color: #aaa; font-size: 14px; pointer-events: none; }
+    .edit-hint { 
+      position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; 
+      font-size: 10px; padding: 4px 8px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; 
+    }
+    .card-img:hover .edit-hint { opacity: 1; }
+
+    .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 600; font-size: 17px; margin-bottom: 4px; }
+    .card-price { color: var(--text-sub); font-size: 14px; margin-bottom: 12px; }
     .spacer { flex: 1; }
 
-    /* Add Button / Counter */
-    .action-area { display: flex; justify-content: flex-end; align-items: center; }
-    
-    .add-btn {
-      background: #f2f2f7;
-      color: var(--accent);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 99px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .add-btn:hover { background: #e5e5ea; }
+    /* Controls */
+    .btn-add { background: #f2f2f7; color: var(--accent); border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+    .qty-ctrl { display: flex; align-items: center; gap: 8px; background: var(--text-main); color: white; padding: 4px; border-radius: 20px; }
+    .qty-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: grid; place-items: center; font-weight: bold; }
+    .qty-btn.sub { background: #444; color: white; }
+    .qty-btn.add { background: white; color: black; }
+    .qty-num { min-width: 20px; text-align: center; font-weight: 600; font-size: 14px; }
 
-    .qty-control {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--text-primary);
-      color: white;
-      padding: 4px 4px 4px 12px;
-      border-radius: 99px;
-    }
-    .qty-val { font-weight: 600; font-size: 14px; min-width: 20px; text-align: center;}
-    .qty-btn-sub {
-      background: #555; border: none; width: 24px; height: 24px; border-radius: 50%; 
-      color: white; cursor: pointer; display: grid; place-items: center; font-size: 16px; line-height: 1;
-    }
-    .qty-btn-plus {
-      background: white; border: none; width: 28px; height: 28px; border-radius: 50%; 
-      color: black; cursor: pointer; display: grid; place-items: center; font-size: 16px;
-    }
-
-    /* Floating Cart Bar */
+    /* Floating Bar */
     .float-bar {
       position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 150%);
-      background: rgba(28, 28, 30, 0.9);
-      backdrop-filter: blur(20px);
-      color: white;
-      padding: 12px 12px 12px 24px;
-      border-radius: 99px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      display: flex; align-items: center; gap: 20px;
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 100;
+      background: rgba(28,28,30,0.95); backdrop-filter: blur(20px);
+      padding: 12px 16px 12px 24px; border-radius: 40px;
+      display: flex; align-items: center; gap: 20px; color: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 100;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .float-bar.show { transform: translate(-50%, 0); }
-    .total-price { font-size: 18px; font-weight: 600; }
-    .checkout-btn {
-      background: var(--accent); border: none; color: white;
-      padding: 12px 28px; border-radius: 99px; font-size: 16px; font-weight: 600; cursor: pointer;
-    }
-    .checkout-btn:hover { background: var(--accent-hover); }
+    .total { font-weight: 600; font-size: 18px; }
+    .btn-clear { background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px; }
+    .btn-checkout { background: var(--accent); border: none; color: white; padding: 10px 24px; border-radius: 24px; font-weight: 600; cursor: pointer; font-size: 15px; }
 
-    /* Modal Overlay */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(4px);
-      display: flex; justify-content: center; align-items: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s;
-      z-index: 1000;
-    }
-    .modal-overlay.show { opacity: 1; pointer-events: auto; }
-    
-    .modal {
-      background: white;
-      width: 90%; max-width: 360px;
-      padding: 40px;
-      border-radius: 24px;
-      text-align: center;
-      transform: scale(0.9); transition: transform 0.3s;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-    .modal-overlay.show .modal { transform: scale(1); }
-    
-    .icon-success {
-      width: 60px; height: 60px; background: var(--success); color: white;
-      border-radius: 50%; display: grid; place-items: center; font-size: 30px;
-      margin: 0 auto 20px;
-    }
-    .modal h2 { margin: 0 0 10px; font-size: 24px; }
-    .modal p { color: var(--text-secondary); margin: 0 0 30px; }
-    .modal-btn {
-      background: #f2f2f7; color: black; border: none;
-      padding: 12px 0; width: 100%; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
-    }
+    /* Toast */
+    .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100%); background: white; padding: 12px 24px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: 0.3s; opacity: 0; font-weight: 500; pointer-events: none; }
+    .toast.show { transform: translate(-50%, 20px); opacity: 1; }
+    .toast.success { color: #34c759; }
+    .toast.error { color: var(--danger); }
   </style>
 </head>
 <body>
 
-<div class="shell">
+<div class="container">
   <header>
-    <h1>Neo Dining</h1>
-    <div class="subtitle">Fresh & Delicious.</div>
-  </header>
-  
-  <div class="menu-grid" id="menuGrid">
+    <div class="top-bar">
+      <h1>Menu</h1>
     </div>
+    <input type="text" class="search-box" id="searchInput" placeholder="搜索菜品...">
+    
+    <div class="nav-scroller" id="categoryNav">
+      </div>
+  </header>
+
+  <div class="grid" id="menuGrid"></div>
 </div>
 
 <div class="float-bar" id="floatBar">
-  <div class="total-price" id="totalDisplay">¥0.00</div>
-  <button class="checkout-btn" id="orderBtn">去结算</button>
+  <div class="total" id="totalPrice">¥0.00</div>
+  <button class="btn-clear" onclick="clearCart()">清空</button>
+  <button class="btn-checkout" id="orderBtn" onclick="submitOrder()">下单</button>
 </div>
 
-<div class="modal-overlay" id="successModal">
-  <div class="modal">
-    <div class="icon-success">✓</div>
-    <h2>下单成功</h2>
-    <p id="modalMsg">后厨已收到您的订单</p>
-    <button class="modal-btn" onclick="closeModal()">好的</button>
-  </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
 const API_BASE = '';
-let menuData = {};
+let fullMenu = {}; 
 let cart = {};
+let currentCat = '全部';
+let searchQuery = '';
 
-const els = {
-  grid: document.getElementById('menuGrid'),
-  bar: document.getElementById('floatBar'),
-  total: document.getElementById('totalDisplay'),
-  modal: document.getElementById('successModal'),
-  modalMsg: document.getElementById('modalMsg')
-};
+// 前端简单的分类关键词逻辑 (无需改后端)
+const CATEGORIES = [
+  { name: '全部', keywords: [] },
+  { name: '热菜', keywords: ['鸡', '肉', '鱼', '排骨', '牛柳', '炒', '烧', '狮子头', '豆腐'] },
+  { name: '冷菜/小食', keywords: ['凉拌', '沙拉', '口水鸡', '肺片', '春卷', '云吞'] },
+  { name: '主食', keywords: ['饭', '面', '河'] },
+  { name: '饮品/甜点', keywords: ['茶', '拿铁', '水', '露', '奶', '布丁', '汤'] }
+];
 
+// 初始化
 async function init() {
+  renderCategories();
+  await fetchMenu();
+}
+
+async function fetchMenu() {
   try {
     const res = await fetch(API_BASE + '/menu');
     const data = await res.json();
     if(data.status === 'ok') {
-      menuData = data.menu;
-      render();
+      fullMenu = data.menu;
+      renderGrid();
     }
-  } catch(e) {
-    els.grid.innerHTML = '<div style="text-align:center;width:100%">无法连接服务器</div>';
-  }
+  } catch(e) { console.error(e); }
 }
 
-// 核心：设置图片的函数（手动输入URL）
-window.setImage = async function(name) {
-  const url = prompt(`请输入 [${name}] 的图片链接 URL:`, 'https://');
+// 渲染分类标签
+function renderCategories() {
+  const nav = document.getElementById('categoryNav');
+  nav.innerHTML = CATEGORIES.map(cat => 
+    `<span class="nav-pill ${cat.name === currentCat ? 'active' : ''}" 
+           onclick="setCategory('${cat.name}')">${cat.name}</span>`
+  ).join('');
+}
+
+window.setCategory = (cat) => {
+  currentCat = cat;
+  renderCategories();
+  renderGrid();
+};
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  renderGrid();
+});
+
+// 手动设置图片函数 (用户需求)
+window.setImage = async (name) => {
+  const url = prompt(`设置 [${name}] 的图片URL:`, 'http://');
   if(!url) return;
-  
   try {
-    // 复用后端 admin 接口，只更新 image 字段
     await fetch(API_BASE + '/admin/menu', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ name: name, image: url })
+      body: JSON.stringify({ name, image: url })
     });
-    // 刷新页面数据
-    init();
-  } catch(e) {
-    alert('设置失败');
-  }
+    fetchMenu(); // 刷新
+  } catch(e) { alert('设置失败'); }
 };
 
-function render() {
-  els.grid.innerHTML = '';
-  // 按价格简单排序，让菜单看起来整齐点
-  const sortedKeys = Object.keys(menuData).sort((a,b) => menuData[a].price - menuData[b].price);
+function renderGrid() {
+  const grid = document.getElementById('menuGrid');
+  grid.innerHTML = '';
 
-  sortedKeys.forEach(name => {
-    const item = menuData[name];
-    const price = item.price || item; // 兼容旧数据
-    const imgUrl = item.image || ''; // 如果没有图片则为空
+  // 1. 过滤分类
+  let items = Object.keys(fullMenu).filter(name => {
+    if(currentCat === '全部') return true;
+    const catConfig = CATEGORIES.find(c => c.name === currentCat);
+    return catConfig.keywords.some(k => name.includes(k));
+  });
+
+  // 2. 过滤搜索
+  if(searchQuery) {
+    items = items.filter(name => name.toLowerCase().includes(searchQuery));
+  }
+
+  // 3. 排序 (有图优先，然后按价格)
+  items.sort((a,b) => {
+    const itemA = fullMenu[a], itemB = fullMenu[b];
+    // 这里简单按价格排序
+    return (itemA.price || itemA) - (itemB.price || itemB);
+  });
+
+  items.forEach(name => {
+    const item = fullMenu[name];
+    const price = item.price || item;
+    const img = item.image;
     const count = cart[name] || 0;
 
-    const card = document.createElement('div');
-    card.className = 'card';
-    
-    // 图片区域 + 编辑按钮
-    let imgHtml = `<div class="card-img" style="${imgUrl ? `background-image:url('${imgUrl}')` : ''}">
-                     <button class="edit-btn" onclick="setImage('${name}')">设置图片</button>
-                   </div>`;
-
-    let actionHtml = '';
-    if (count === 0) {
-      actionHtml = `<button class="add-btn" onclick="updateCart('${name}', 1)">+ 添加</button>`;
-    } else {
-      actionHtml = `
-        <div class="qty-control">
-          <button class="qty-btn-sub" onclick="updateCart('${name}', -1)">−</button>
-          <span class="qty-val">${count}</span>
-          <button class="qty-btn-plus" onclick="updateCart('${name}', 1)">＋</button>
-        </div>`;
-    }
-
-    card.innerHTML = `
-      ${imgHtml}
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="card-img" onclick="setImage('${name}')" style="${img ? `background-image:url('${img}')` : ''}">
+        ${!img ? '<span class="img-placeholder">点击设置图片</span>' : ''}
+        <div class="edit-hint">修改图片</div>
+      </div>
       <div class="card-body">
         <div class="card-title">${name}</div>
-        <div class="card-price">¥${parseFloat(price).toFixed(2)}</div>
+        <div class="card-price">¥${price.toFixed(2)}</div>
         <div class="spacer"></div>
-        <div class="action-area">${actionHtml}</div>
+        <div style="display:flex; justify-content:flex-end">
+          ${count === 0 
+            ? `<button class="btn-add" onclick="updateCart('${name}', 1)">+ 添加</button>`
+            : `<div class="qty-ctrl">
+                 <button class="qty-btn sub" onclick="updateCart('${name}', -1)">−</button>
+                 <span class="qty-num">${count}</span>
+                 <button class="qty-btn add" onclick="updateCart('${name}', 1)">＋</button>
+               </div>`
+          }
+        </div>
       </div>
     `;
-    els.grid.appendChild(card);
+    grid.appendChild(div);
   });
   updateTotal();
 }
 
-window.updateCart = function(name, delta) {
-  const current = cart[name] || 0;
-  const next = Math.max(0, current + delta);
-  if(next === 0) delete cart[name];
-  else cart[name] = next;
-  render();
+window.updateCart = (name, delta) => {
+  const newCount = (cart[name] || 0) + delta;
+  if(newCount <= 0) delete cart[name];
+  else cart[name] = newCount;
+  renderGrid();
+};
+
+window.clearCart = () => {
+  if(confirm('确定清空购物车吗？')) {
+    cart = {};
+    renderGrid();
+  }
 };
 
 function updateTotal() {
-  let sum = 0;
-  let count = 0;
-  Object.keys(cart).forEach(k => {
-    const price = menuData[k].price || menuData[k];
-    sum += price * cart[k];
-    count += cart[k];
+  let sum = 0, count = 0;
+  Object.keys(cart).forEach(name => {
+    const item = fullMenu[name];
+    sum += (item.price || item) * cart[name];
+    count += cart[name];
   });
   
-  els.total.textContent = '¥' + sum.toFixed(2);
-  if(count > 0) els.bar.classList.add('show');
-  else els.bar.classList.remove('show');
+  document.getElementById('totalPrice').innerText = '¥' + sum.toFixed(2);
+  const bar = document.getElementById('floatBar');
+  if(count > 0) bar.classList.add('show');
+  else bar.classList.remove('show');
 }
 
-document.getElementById('orderBtn').onclick = async () => {
+window.submitOrder = async () => {
+  const btn = document.getElementById('orderBtn');
+  btn.disabled = true; btn.innerText = '提交中...';
+  
   const items = [];
   Object.keys(cart).forEach(name => {
     for(let i=0; i<cart[name]; i++) items.push(name);
@@ -321,26 +295,25 @@ document.getElementById('orderBtn').onclick = async () => {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ items })
     });
-    const json = await res.json();
-    
-    if(json.status === 'ok') {
+    const data = await res.json();
+    if(data.status === 'ok') {
+      showToast(`下单成功！总计 ¥${data.total}`, true);
       cart = {};
-      render();
-      showModal(`总计 ¥${json.total}`);
+      renderGrid();
     } else {
-      alert(json.message);
+      showToast(data.message, false);
     }
   } catch(e) {
-    alert('网络错误');
+    showToast('网络错误', false);
   }
+  btn.disabled = false; btn.innerText = '下单';
 };
 
-function showModal(msg) {
-  els.modalMsg.textContent = msg;
-  els.modal.classList.add('show');
-}
-window.closeModal = function() {
-  els.modal.classList.remove('show');
+function showToast(msg, isSuccess) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.className = `toast ${isSuccess ? 'success' : 'error'} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 init();

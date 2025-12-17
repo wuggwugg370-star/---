@@ -7,16 +7,18 @@ from typing import Dict, List, Tuple, Any
 
 
 class MenuStore:
-    """线程安全的菜单存储，可选持久化到 JSON 文件。"""
+    """线程安全的菜单存储，启动时自动合并 config 中的新菜单项。"""
 
     def __init__(self, data_file: Path, default_menu: Dict[str, float]):
         self._data_file = data_file
         self._lock = Lock()
         self._menu: Dict[str, Dict[str, Any]] = {}
+        # 初始化时加载，并传入默认菜单用于合并
         self._load(default_menu)
 
     @staticmethod
     def _normalize_entry(value: Any) -> Dict[str, Any]:
+        """将数据标准化为 {price: float, image: str|None} 格式"""
         if isinstance(value, dict):
             price = float(value.get("price", 0.0))
             image = value.get("image")
@@ -26,27 +28,43 @@ class MenuStore:
         return {"price": price, "image": image}
 
     def _load(self, default_menu: Dict[str, float]):
+        """加载逻辑：读取本地文件 -> 合并默认菜单 -> 保存"""
+        loaded_data = {}
+        file_exists = False
+
+        # 1. 尝试读取本地 JSON
         if self._data_file.exists():
             try:
                 with self._data_file.open("r", encoding="utf-8") as f:
                     data = json.load(f)
                 if isinstance(data, dict):
-                    self._menu = {
+                    loaded_data = {
                         str(k): self._normalize_entry(v) for k, v in data.items()
                     }
-                    return
+                    file_exists = True
             except (json.JSONDecodeError, OSError, ValueError):
-                # 如果文件损坏，则回退到默认菜单
-                pass
-        self._menu = {str(k): self._normalize_entry(v) for k, v in default_menu.items()}
-        self._save()
+                pass # 文件损坏则忽略
+
+        # 2. 关键修改：将 config.py 中的新菜品合并进来
+        # 如果本地没有数据，直接全量加载
+        # 如果本地有数据，只补充本地缺失的 key (不覆盖已有设置，如修改过的图片)
+        self._menu = loaded_data
+        
+        has_new_items = False
+        for name, price in default_menu.items():
+            if name not in self._menu:
+                self._menu[name] = self._normalize_entry(price)
+                has_new_items = True
+        
+        # 3. 如果有合并发生，或者文件不存在，立即保存一次
+        if has_new_items or not file_exists:
+            self._save()
 
     def _save(self):
         try:
             with self._data_file.open("w", encoding="utf-8") as f:
                 json.dump(self._menu, f, ensure_ascii=False, indent=2)
         except OSError:
-            # 在嵌入式环境下可能没有写权限，忽略即可
             pass
 
     def get_menu(self) -> Dict[str, Dict[str, Any]]:
