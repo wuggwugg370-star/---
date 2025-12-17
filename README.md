@@ -3,7 +3,26 @@
 > 现代化的点餐演示项目，提供 Flask API、命令行客户端、苹果官网质感的 Web UI、PyInstaller 打包脚本以及 nginx 部署示例。
 
 ---
+## Neo Dining 点餐系统 (Local Edition)
 
+> 极致简约的现代化点餐系统。基于 Flask + 原生 JS，采用 Apple 官方设计风格。
+> **v2.0 特性**：完全移除了外部 AI 依赖，使用 Pillow 本地生成极具设计感的菜品封面。
+
+---
+
+### 1. 快速开始
+
+#### 环境准备
+
+需要 Python 3.9+。
+
+```bash
+# 1. 安装依赖 (新增 Pillow 用于绘图)
+pip install -r requirements.txt
+pip install Pillow
+
+# 2. 启动服务
+python server.py
 ### 1. 目录速览
 
 - `server.py`：Flask 应用（REST API + 可选本地静态托管）

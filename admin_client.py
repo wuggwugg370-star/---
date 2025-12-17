@@ -85,16 +85,41 @@ def show_menu():
 
 
 def generate_ai_image():
-    name = input("请输入需要生成图片的菜名：").strip()
+    name = input("请输入需要设置图片的菜名：").strip()
     if not name:
         print("菜名不能为空")
         return
-    prompt = input("可选：自定义提示词（留空使用默认风格）：").strip()
-    payload = {"prompt": prompt} if prompt else {}
+        
+    # 检查菜品是否存在
+    menu_data = get_menu()
+    if menu_data.get("status") != "ok" or name not in menu_data.get("menu", {}):
+        print(f"菜品 '{name}' 不存在，请先添加该菜品")
+        return
+        
+    image_path = input("请输入本地图片路径（绝对路径或相对路径）：").strip()
+    if not image_path:
+        print("图片路径不能为空")
+        return
+        
+    # 检查文件是否存在
+    if not os.path.exists(image_path):
+        print(f"错误：图片文件不存在 - {image_path}")
+        return
+        
+    # 检查文件类型
+    valid_extensions = ('.jpg', '.jpeg', '.png', '.gif')
+    if not image_path.lower().endswith(valid_extensions):
+        print(f"错误：仅支持 {valid_extensions} 类型的图片")
+        return
+
     try:
+        # 读取图片文件内容
+        with open(image_path, 'rb') as f:
+            image_data = f.read()
+            
         resp = requests.post(
             f"{BASE_URL}/admin/menu/{name}/ai-image",
-            json=payload,
+            json={"image_path": image_path},  # 发送本地路径供后端处理
             timeout=60,
         )
         data = resp.json()
@@ -103,10 +128,9 @@ def generate_ai_image():
         return
 
     if data.get("status") == "ok":
-        print("图片已生成：", data.get("image"))
+        print("图片已设置：", data.get("image"))
     else:
-        print("生成失败：", data.get("message"))
-
+        print("设置失败：", data.get("message"))
 
 def main():
     print("=== 后台管理客户端 ===")
