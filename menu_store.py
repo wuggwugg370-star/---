@@ -45,18 +45,17 @@ class MenuStore:
             except (json.JSONDecodeError, OSError, ValueError):
                 pass # 文件损坏则忽略
 
-        # 2. 关键修改：将 config.py 中的新菜品合并进来
-        # 如果本地没有数据，直接全量加载
-        # 如果本地有数据，只补充本地缺失的 key (不覆盖已有设置，如修改过的图片)
+        # 2. 【核心修复】将 config.py 中的新菜品合并进来
         self._menu = loaded_data
         
         has_new_items = False
         for name, price in default_menu.items():
+            # 如果这个菜在本地记录里没有，就从 config 加进去
             if name not in self._menu:
                 self._menu[name] = self._normalize_entry(price)
                 has_new_items = True
         
-        # 3. 如果有合并发生，或者文件不存在，立即保存一次
+        # 3. 如果有新菜加入，或者文件本来就不存在，立即保存更新后的 json
         if has_new_items or not file_exists:
             self._save()
 
